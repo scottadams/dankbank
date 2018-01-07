@@ -23,7 +23,7 @@ const NavBar = () => {
 
 const Header = (props) => {
   return (
-    <div className="container mt-4 mb-4 h3 text-center text-dark">
+    <div className="container mt-3 mb-3 h3 text-center text-dark">
       <div className="row">
         <div className="col">
           <NavLink exact to="/"
@@ -40,11 +40,24 @@ const Header = (props) => {
   );
 }
 
+const BalanceCard = (props) => {
+  return(
+    <div class="mb-4 text-center text-muted">
+      <div class="row">
+        <div className="col">
+        Total Balance: ${props.totalBalance}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // These components constitute the homepage, which lists all accounts: HomePage/AccountList/AccountListItem
 const HomePage = (props) => {
   return (
     <div>
       <Header text="All Accounts" back="false"/>
+      <BalanceCard totalBalance={props.totalBalance}/>
       <AccountList accounts={props.accounts} onClickAccount={props.onClickAccount}/>
     </div>
   );
