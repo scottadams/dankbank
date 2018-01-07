@@ -25,15 +25,16 @@ const Header = (props) => {
   return (
     <div className="container mt-4 mb-4 h3 text-center text-dark">
       <div className="row">
-        <div className="col-xs-1">
+        <div className="col">
           <NavLink exact to="/"
                    className={"pull-left" + (props.back==="true"?"":" invisible")}>
             <button className="btn fa fa-chevron-left"/>
           </NavLink>
         </div>
-        <div className="col-10 col-md-auto">
+        <div className="col-8">
           {props.text}
         </div>
+        <div className="col"/>
       </div>
     </div>
   );
