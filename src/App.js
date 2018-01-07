@@ -1,18 +1,33 @@
 import React, { Component } from "react";
-
+ 
 import {
     Route,
     NavLink,
     HashRouter
 } from "react-router-dom"
 
+import {
+  get_all_accounts,
+  get_account_details,
+  get_total_balance
+} from './Data'
+
+// These two components are used throughout the application
+const NavBar = () => {
+  return(
+    <header className="navbar navbar-expand-lg navbar-light bg-primary text-primary">
+      <span className="navbar-brand text-light">DankBank</span>
+    </header>
+  )
+}
+
 const Header = (props) => {
   return (
-    <div className="page-header">
-      <div className="container text-center h3">
+    <div className="mt-3 mb-3">
+      <div className="h3 text-center text-dark">
         <NavLink exact to="/"
-                 className={"pull-left" + (props.back==="true"?"":" hidden")}>
-          <button className="btn glyphicon glyphicon-chevron-left"/>
+                 className={"pull-left" + (props.back==="true"?"":" invisible")}>
+          <button className="btn fa fa-chevron-left"/>
         </NavLink>
         {props.text}
       </div>
@@ -20,12 +35,62 @@ const Header = (props) => {
   );
 }
 
+// These components constitute the homepage, which lists all accounts: HomePage/AccountList/AccountListItem
+const HomePage = (props) => {
+  return (
+    <div>
+      <Header text="All Accounts" back="false"/>
+      <AccountList accounts={props.accounts} onClickAccount={props.onClickAccount}/>
+    </div>
+  );
+}
+
+const AccountList = (props) => {
+  return (
+    <div className="container">
+      <ul className="list-group">
+        {props.accounts.map(account => (
+          <AccountListItem {...account} key={props.id} onClickAccount={props.onClickAccount}/>
+        ))}
+      </ul>  
+    </div>
+  );
+}
+
+class AccountListItem extends Component {
+  handleClick = (event) => {
+    const selectedAccountID = this.props.id;
+    this.props.onClickAccount({selectedAccountID});
+  }
+
+  render () {
+    return (
+      <NavLink to="/account" onClick={this.handleClick}>
+        <span className="list-group-item list-group-item-action">
+          {this.props.name}
+          <span className="pull-right">{"$" + this.props.balance}</span>
+        </span>
+      </NavLink>
+    )
+  }
+}
+
+// The two components constitute the single-account-view: AccountPage/AccountDetails
+const AccountPage = (props) => {
+  return (
+    <div>
+      <Header text={props.selectedAccount.name} back="true"/>
+      <AccountDetails {...props.selectedAccount} />
+    </div>
+  );
+}
+
 const AccountDetails = (props) => {
   return (
     <div className="container">
-      <ul className='list-group'>
+      <ul className='list-group text-dark'>
         <li className='list-group-item'>
-          Account Balance: <span className="pull-right">{props.balance}</span>
+          Account Balance: <span className="pull-right">{"$" + props.balance}</span>
         </li>
         <li className='list-group-item'>
           Sort Code: <span className="pull-right">{props.sort_code}</span>
@@ -44,120 +109,43 @@ const AccountDetails = (props) => {
   ); 
 }
 
-class AccountPage extends Component {
-  render() {
-    return (
-      <div>
-        <Header text={this.props.selectedAccount.name} back="true"/>
-        <AccountDetails {...this.props.selectedAccount} />
-      </div>
-    );
-  }
-}
-
-class AccountListItem extends Component {
-  handleClick = (event) => {
-    const selectedAccountID = this.props.id;
-    this.props.onClickAccount({selectedAccountID});
-  }
-
-  render () {
-    return (
-      <NavLink to="/account" onClick={this.handleClick}>
-        <a className="list-group-item list-group-item-action">
-          {this.props.name}
-          <span className="pull-right">{this.props.balance}</span>
-        </a>
-      </NavLink>
-    )
-  }
-}
-
-const AccountList = (props) => {
-  return (
-    <div className="container">
-      <ul className="list-group">
-        {props.accounts.map(account => (
-          <AccountListItem {...account} onClickAccount={props.onClickAccount}/>
-        ))}
-      </ul>  
-    </div>
-  );
-}
-
-const HomePage = (props) => {
-  return (
-    <div>
-      <Header text="All Accounts" back="false"/>
-      <AccountList accounts={props.accounts} onClickAccount={props.onClickAccount}/>
-    </div>
-  );
-}
- 
-
-const accounts = [
-  {
-    id: 1,
-    name: "Checking Account",
-    created_date: "06/01/2018",
-    balance: "$100,000.53",
-    account_number: "00243121",
-    sort_code: "30-32-62",
-    dankness_index: "8.4"
-  },
-  {
-    id: 2,
-    name: "Savings Account",
-    created_date: "06/01/2018",
-    balance: "$120.32",
-    account_number: "01243121",
-    sort_code: "30-32-62",
-    dankness_index: "3.6"
-  },
-  {
-    id: 3,
-    name: "Credit Account",
-    created_date: "06/01/2018",
-    balance: "$200.00",
-    account_number: "39932841",
-    sort_code: "30-32-62",
-    dankness_index: "6.2"
-  }
-];
-
-
+// Top level component, which is responsible for rendering both pages when called upon
 class App extends Component {
   state = {
     selectedAccountID: 1,
-    accounts: accounts,
-    selectedAccount: accounts.find(account => account.id === 1)
+    accounts: get_all_accounts(),
+    selectedAccount: get_account_details(1),
+    totalBalance: get_total_balance()
   };
 
   selectAccount = (selection) => {
-    this.setState({
-      selectedAccountID: selection.selectedAccountID,
-      accounts: accounts,
-      selectedAccount: accounts.find(account => account.id === selection.selectedAccountID)
-    });
+    this.setState(prevState => {
+      return ({
+        selectedAccountID: selection.selectedAccountID,
+        accounts: prevState.accounts,
+        selectedAccount: get_account_details(selection.selectedAccountID),
+        totalBalance: prevState.totalBalance
+      });
+    })
   }
   
   render() {
     return (
       <HashRouter>
         <div>
-          <header className="navbar navbar-default">
-            <span className="navbar-brand">DankBank</span>
-          </header>
+          <NavBar />
           <div className="container">
             <Route exact path="/"
                    render={(props) => (
-                        <HomePage {...props}
+                     <HomePage {...props}
                                   onClickAccount={this.selectAccount}
-                                  accounts={this.state.accounts}/>
+                                  accounts={this.state.accounts}
+                                  totalBalance={this.state.totalBalance}/>
                    )}/>
             <Route path="/account"
                    render={(props) => (
-                       <AccountPage {...props} selectedAccount={this.state.selectedAccount} />
+                     <AccountPage {...props}
+                                    selectedAccount={this.state.selectedAccount}/>
                    )}/>
           </div>
         </div>
