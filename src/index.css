@@ -1,0 +1,29 @@
+.page-header {
+    border-bottom: none;
+}
+
+.container {
+	max-width: 500px;
+}
+
+.navbar {
+    margin-bottom: 0;
+}
+
+.btn.glyphicon-chevron-left {
+	text-decoration: none;
+	color: #555;
+}
+
+.btn:focus,.btn:active {
+   outline: none !important;
+   box-shadow: none;
+}
+
+.list-group-item {
+	color: #555;
+}
+
+.h3 {
+	color: #555;
+}
