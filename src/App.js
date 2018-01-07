@@ -23,13 +23,17 @@ const NavBar = () => {
 
 const Header = (props) => {
   return (
-    <div className="mt-3 mb-3">
-      <div className="h3 text-center text-dark">
-        <NavLink exact to="/"
-                 className={"pull-left" + (props.back==="true"?"":" invisible")}>
-          <button className="btn fa fa-chevron-left"/>
-        </NavLink>
-        {props.text}
+    <div className="container mt-4 mb-4 h3 text-center text-dark">
+      <div className="row">
+        <div className="col-xs-1">
+          <NavLink exact to="/"
+                   className={"pull-left" + (props.back==="true"?"":" invisible")}>
+            <button className="btn fa fa-chevron-left"/>
+          </NavLink>
+        </div>
+        <div className="col-10 col-md-auto">
+          {props.text}
+        </div>
       </div>
     </div>
   );
